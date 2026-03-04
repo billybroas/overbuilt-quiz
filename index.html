@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Secure Is Your Life? — Life Security Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #f0fdf4;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 80px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* ─── HEADER ─── */
+    .site-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .site-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+    .site-header p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* ─── MAIN CONTAINER ─── */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ─── PROGRESS BAR ─── */
+    .progress-bar-wrap {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .progress-row {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    .progress-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    /* ─── QUIZ ─── */
+    #quiz-view { display: block; }
+    #results-view { display: none; }
+
+    /* ─── DOMAIN SECTION ─── */
+    .domain-section {
+      margin-top: 24px;
+    }
+    .domain-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .domain-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .domain-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .domain-weight {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 8px;
+    }
+
+    /* ─── QUESTION CARD ─── */
+    .question-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color 0.2s;
+    }
+    .question-card.answered-yes { border-color: var(--green); }
+    .question-card.answered-no  { border-color: var(--amber); }
+
+    .question-text {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--text);
+    }
+    .question-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .toggle-btn {
+      width: 48px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-secondary);
+      font-family: inherit;
+    }
+    .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .toggle-btn.yes.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+    .toggle-btn.no.active {
+      background: var(--amber);
+      border-color: var(--amber);
+      color: #fff;
+    }
+
+    /* ─── SUBMIT BUTTON ─── */
+    .submit-wrap {
+      margin-top: 32px;
+      text-align: center;
+    }
+    .submit-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 40px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s, transform 0.1s;
+      box-shadow: var(--shadow-md);
+    }
+    .submit-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .submit-btn:not(:disabled):hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    .submit-btn:not(:disabled):active { transform: none; }
+
+    /* ─── RESULTS ─── */
+    #results-view { padding-top: 28px; }
+
+    .score-hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 20px;
+    }
+    .score-number {
+      font-size: 72px;
+      font-weight: 800;
+      letter-spacing: -3px;
+      line-height: 1;
+      color: var(--text);
+    }
+    .score-number .score-denom {
+      font-size: 28px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: -1px;
+    }
+    .level-badge {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 16px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .level-tagline {
+      margin-top: 8px;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+    .level-next {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      display: inline-block;
+    }
+
+    /* level colors */
+    .level-exposed  { background: #fee2e2; color: #991b1b; }
+    .level-aware    { background: #fef3c7; color: #92400e; }
+    .level-protected { background: #dbeafe; color: #1e3a8a; }
+    .level-hardened { background: #d1fae5; color: #064e3b; }
+    .level-overbuilt { background: #ede9fe; color: #4c1d95; }
+
+    /* ─── DOMAIN SCORES ─── */
+    .domain-scores-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .domain-scores-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .domain-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .domain-row:last-child { margin-bottom: 0; }
+    .domain-row-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .domain-row-label {
+      font-size: 13px;
+      font-weight: 600;
+      width: 130px;
+      flex-shrink: 0;
+    }
+    .domain-bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .domain-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .domain-row-score {
+      font-size: 13px;
+      font-weight: 700;
+      width: 38px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ─── PRIORITIES ─── */
+    .priorities-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .priority-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .priority-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--amber-light);
+      color: var(--amber);
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .priority-content { flex: 1; }
+    .priority-action {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .priority-cost {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .priority-domain-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .all-clear {
+      background: var(--green-light);
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      color: var(--green);
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    /* ─── FOOTER ─── */
+    .quiz-footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-bottom: 8px;
+    }
+    .quiz-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .retake-btn {
+      background: var(--bg);
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .retake-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 480px) {
+      .site-header h1 { font-size: 19px; }
+      .score-number { font-size: 56px; }
+      .domain-row-label { width: 100px; font-size: 12px; }
+      .question-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .toggle-group { align-self: flex-end; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>How Secure Is Your Life?</h1>
+  <p>16 questions · 4 domains · 5 minutes — find out where you stand</p>
+</header>
+
+<div class="progress-bar-wrap" id="progress-bar-wrap">
+  <div class="progress-row">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">0 of 16</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══ QUIZ VIEW ═══ -->
+  <div id="quiz-view">
+
+    <!-- CYBER -->
+    <div class="domain-section">
+      <div class="domain-header">
+        <span class="domain-icon">🔐</span>
+        <span class="domain-title">Cyber Security</span>
+        <span class="domain-weight">30% of score</span>
+      </div>
+
+      <div class="question-card" id="qcard-1">
+        <div class="question-text">
+          Do you use a password manager for all your accounts?
+          <span class="question-hint">1Password, Bitwarden, LastPass, etc.</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(1,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(1,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-2">
+        <div class="question-text">
+          Do you have two-factor authentication on your most important accounts?
+          <span class="question-hint">Email, banking, work tools — at minimum</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(2,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(2,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-3">
+        <div class="question-text">
+          Is your laptop's hard drive encrypted?
+          <span class="question-hint">FileVault on Mac · BitLocker on Windows</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(3,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(3,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-4">
+        <div class="question-text">
+          Do you have 2FA backup codes stored somewhere safe?
+          <span class="question-hint">In case you lose your phone and get locked out</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(4,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(4,'no')">NO</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISASTER -->
+    <div class="domain-section">
+      <div class="domain-header">
+        <span class="domain-icon">🏠</span>
+        <span class="domain-title">Disaster Preparedness</span>
+        <span class="domain-weight">25% of score</span>
+      </div>
+
+      <div class="question-card" id="qcard-5">
+        <div class="question-text">
+          Do you have at least 72 hours of water stored?
+          <span class="question-hint">1 gallon per person per day — minimum</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(5,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(5,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-6">
+        <div class="question-text">
+          Do you have a 72-hour supply of non-perishable food?
+          <span class="question-hint">Canned goods, protein bars, shelf-stable meals</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(6,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(6,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-7">
+        <div class="question-text">
+          Do you have a family communication plan?
+          <span class="question-hint">An out-of-area contact + two local meeting points</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(7,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(7,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-8">
+        <div class="question-text">
+          Do you have working smoke detectors AND a CO detector in your home?
+          <span class="question-hint">Tested in the last 6 months</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(8,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(8,'no')">NO</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSURANCE -->
+    <div class="domain-section">
+      <div class="domain-header">
+        <span class="domain-icon">📋</span>
+        <span class="domain-title">Insurance Coverage</span>
+        <span class="domain-weight">25% of score</span>
+      </div>
+
+      <div class="question-card" id="qcard-9">
+        <div class="question-text">
+          Do you have renters or homeowners insurance?
+          <span class="question-hint">Covers your belongings, liability, and temporary housing</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(9,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(9,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-10">
+        <div class="question-text">
+          Does your policy cover earthquakes?
+          <span class="question-hint">In California this is always a separate policy</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(10,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(10,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-11">
+        <div class="question-text">
+          Do you have life insurance?
+          <span class="question-hint">Ideally 10× your annual income as a baseline</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(11,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(11,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-12">
+        <div class="question-text">
+          Do you have liability protection — a professional liability (E&amp;O) or umbrella policy?
+          <span class="question-hint">Critical if you're self-employed or a homeowner</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(12,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(12,'no')">NO</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHYSICAL -->
+    <div class="domain-section">
+      <div class="domain-header">
+        <span class="domain-icon">🔒</span>
+        <span class="domain-title">Home &amp; Physical Security</span>
+        <span class="domain-weight">20% of score</span>
+      </div>
+
+      <div class="question-card" id="qcard-13">
+        <div class="question-text">
+          Do all exterior doors have deadbolts with reinforced strike plates?
+          <span class="question-hint">Strike plates need 3-inch screws — most come with short ones</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(13,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(13,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-14">
+        <div class="question-text">
+          Do you have a fireproof safe for important documents?
+          <span class="question-hint">Passports, birth certificates, property deeds, insurance policies</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(14,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(14,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-15">
+        <div class="question-text">
+          Do you have a security system or cameras on your home?
+          <span class="question-hint">Doorbell cam, exterior cameras, or monitored alarm</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(15,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(15,'no')">NO</button>
+        </div>
+      </div>
+
+      <div class="question-card" id="qcard-16">
+        <div class="question-text">
+          Do you have a home inventory — photos or video of your valuables?
+          <span class="question-hint">Required to file a complete insurance claim</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn yes" onclick="answer(16,'yes')">YES</button>
+          <button class="toggle-btn no"  onclick="answer(16,'no')">NO</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submitBtn" onclick="showResults()" disabled>
+        Get My Score →
+      </button>
+    </div>
+
+    <div class="quiz-footer">
+      Built on the <strong>Overbuilt</strong> system · <a href="https://marketingisanargument.com" target="_blank">billybroas.com</a>
+    </div>
+
+  </div><!-- /quiz-view -->
+
+
+  <!-- ═══ RESULTS VIEW ═══ -->
+  <div id="results-view">
+
+    <div class="score-hero">
+      <div class="score-number" id="resultScore">—<span class="score-denom">/100</span></div>
+      <div><span class="level-badge" id="resultBadge">—</span></div>
+      <div class="level-tagline" id="resultTagline">—</div>
+      <div class="level-next" id="resultNext" style="display:none"></div>
+    </div>
+
+    <div class="domain-scores-card">
+      <div class="domain-scores-title">Domain Breakdown</div>
+
+      <div class="domain-row">
+        <span class="domain-row-icon">🔐</span>
+        <span class="domain-row-label">Cyber Security</span>
+        <div class="domain-bar-track"><div class="domain-bar-fill" id="bar-cyber" style="width:0%"></div></div>
+        <span class="domain-row-score" id="score-cyber">—</span>
+      </div>
+      <div class="domain-row">
+        <span class="domain-row-icon">🏠</span>
+        <span class="domain-row-label">Disaster Prep</span>
+        <div class="domain-bar-track"><div class="domain-bar-fill" id="bar-disaster" style="width:0%"></div></div>
+        <span class="domain-row-score" id="score-disaster">—</span>
+      </div>
+      <div class="domain-row">
+        <span class="domain-row-icon">📋</span>
+        <span class="domain-row-label">Insurance</span>
+        <div class="domain-bar-track"><div class="domain-bar-fill" id="bar-insurance" style="width:0%"></div></div>
+        <span class="domain-row-score" id="score-insurance">—</span>
+      </div>
+      <div class="domain-row">
+        <span class="domain-row-icon">🔒</span>
+        <span class="domain-row-label">Physical</span>
+        <div class="domain-bar-track"><div class="domain-bar-fill" id="bar-physical" style="width:0%"></div></div>
+        <span class="domain-row-score" id="score-physical">—</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="priorities-title">Your Top Priorities</div>
+      <div id="priorityList"><!-- filled by JS --></div>
+    </div>
+
+    <div style="text-align:center">
+      <button class="retake-btn" onclick="retake()">↩ Retake Quiz</button>
+    </div>
+
+    <div class="quiz-footer">
+      Built on the <strong>Overbuilt</strong> system · <a href="https://marketingisanargument.com" target="_blank">billybroas.com</a>
+    </div>
+
+  </div><!-- /results-view -->
+
+</div><!-- /container -->
+
+<script>
+  // ─── QUESTION DATA ────────────────────────────────────────────────────────
+  const QUESTIONS = [
+    // id, domain, priority action (if no), cost
+    { id:  1, domain: 'cyber',    action: 'Set up a password manager',                              detail: 'Use 1Password, Bitwarden, or LastPass — one of the highest-ROI security moves you can make.',                                          cost: 'Free–$3/mo' },
+    { id:  2, domain: 'cyber',    action: 'Enable 2FA on all critical accounts',                    detail: 'Start with your email — it\'s the master key to everything else. Then banking, work tools.',                                          cost: 'Free' },
+    { id:  3, domain: 'cyber',    action: 'Enable disk encryption on your laptop',                  detail: 'Mac: System Settings → Privacy & Security → FileVault. Takes ~30 min. Zero performance hit.',                                        cost: 'Free' },
+    { id:  4, domain: 'cyber',    action: 'Generate and store 2FA backup codes',                    detail: 'Download backup codes for each app that supports 2FA. Print them and store in a safe place.',                                         cost: 'Free' },
+    { id:  5, domain: 'disaster', action: 'Store 72 hours of water',                                detail: 'Buy two 5-gallon water jugs (~$15 each). Put them in your garage, rotate once a year.',                                              cost: '~$30' },
+    { id:  6, domain: 'disaster', action: 'Build a 72-hour food supply',                            detail: 'A bin of canned goods, protein bars, and shelf-stable meals. Takes one Amazon order.',                                               cost: '~$50–100' },
+    { id:  7, domain: 'disaster', action: 'Create a family communication plan',                     detail: 'Pick one out-of-state contact + two local meeting spots. Write it on a card everyone carries.',                                       cost: 'Free' },
+    { id:  8, domain: 'disaster', action: 'Install a CO detector and test smoke detectors',         detail: 'CO detector is ~$25 on Amazon. Required by California law. Takes 5 min to install.',                                                  cost: '~$25' },
+    { id:  9, domain: 'insurance',action: 'Get renters or homeowners insurance',                    detail: 'Renters insurance is typically $15–25/month and covers your belongings, liability, and hotel costs.',                                  cost: '$15–25/mo' },
+    { id: 10, domain: 'insurance',action: 'Get earthquake insurance',                               detail: 'California: standard policies exclude earthquakes. Look at GeoVera or Palomar for separate coverage.',                                 cost: '$800–1,500/yr' },
+    { id: 11, domain: 'insurance',action: 'Get life insurance',                                     detail: 'A 20-year term policy. Healthy 30s/40s can get $500K of coverage for ~$25–40/month.',                                                 cost: '$25–50/mo' },
+    { id: 12, domain: 'insurance',action: 'Get a $1M umbrella liability policy',                    detail: 'Typically $200–400/yr. Covers gaps across your auto, home, and other policies.',                                                      cost: '$200–400/yr' },
+    { id: 13, domain: 'physical', action: 'Upgrade door strike plates to 3-inch screws',            detail: 'Most doors ship with ¾-inch screws — swap them for 3-inch screws into the stud. Dramatically harder to kick in. $5 fix.',             cost: '~$5' },
+    { id: 14, domain: 'physical', action: 'Get a fireproof safe for documents',                     detail: 'SentrySafe FPW082HTC (~$275) survives 1 hour at 1700°F. Fits passports, birth certificates, and property deeds.',                     cost: '$170–275' },
+    { id: 15, domain: 'physical', action: 'Install a basic security system or cameras',             detail: 'SimpliSafe starter kit (~$200) or Wyze cameras (~$30 each). Visible deterrence matters.',                                             cost: '$30–200' },
+    { id: 16, domain: 'physical', action: 'Create a home inventory',                                detail: 'Walk through your home with your phone and record everything. Takes 20 minutes. Invaluable at claim time.',                            cost: 'Free' },
+  ];
+
+  const DOMAIN_WEIGHTS = { cyber: 0.30, disaster: 0.25, insurance: 0.25, physical: 0.20 };
+
+  const LEVELS = [
+    { min: 96, key: 'overbuilt',  label: 'OVERBUILT',  tagline: 'Elite security posture — genuinely hard to rattle.' },
+    { min: 81, key: 'hardened',   label: 'HARDENED',   tagline: 'Proactive defenses in place. Most people never get here.' },
+    { min: 61, key: 'protected',  label: 'PROTECTED',  tagline: 'Solid baseline. A few gaps remain.' },
+    { min: 41, key: 'aware',      label: 'AWARE',      tagline: 'You know the gaps. Now close them.' },
+    { min:  0, key: 'exposed',    label: 'EXPOSED',    tagline: 'Critical gaps. The most important time to act.' },
+  ];
+
+  const BAR_COLORS = { cyber: '#2563eb', disaster: '#16a34a', insurance: '#d97706', physical: '#7c3aed' };
+
+  // ─── STATE ─────────────────────────────────────────────────────────────────
+  const answers = {}; // { 1: 'yes'|'no', ... }
+
+  // ─── ANSWER HANDLER ────────────────────────────────────────────────────────
+  function answer(id, val) {
+    answers[id] = val;
+
+    // Update button states
+    const card = document.getElementById('qcard-' + id);
+    const btns = card.querySelectorAll('.toggle-btn');
+    btns.forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.classList.contains(val)) btn.classList.add('active');
+    });
+
+    // Update card border
+    card.className = 'question-card answered-' + val;
+
+    // Update progress
+    const count = Object.keys(answers).length;
+    document.getElementById('progressFill').style.width = (count / 16 * 100) + '%';
+    document.getElementById('progressLabel').textContent = count + ' of 16';
+
+    // Enable submit when all answered
+    document.getElementById('submitBtn').disabled = (count < 16);
+  }
+
+  // ─── COMPUTE SCORES ────────────────────────────────────────────────────────
+  function computeScores() {
+    const domains = { cyber: [1,2,3,4], disaster: [5,6,7,8], insurance: [9,10,11,12], physical: [13,14,15,16] };
+    const domainScores = {};
+    for (const [domain, ids] of Object.entries(domains)) {
+      const yesCount = ids.filter(id => answers[id] === 'yes').length;
+      domainScores[domain] = Math.round(yesCount / ids.length * 100);
+    }
+    const overall = Math.round(
+      domainScores.cyber    * DOMAIN_WEIGHTS.cyber    +
+      domainScores.disaster * DOMAIN_WEIGHTS.disaster +
+      domainScores.insurance* DOMAIN_WEIGHTS.insurance+
+      domainScores.physical * DOMAIN_WEIGHTS.physical
+    );
+    return { domainScores, overall };
+  }
+
+  // ─── GET LEVEL ─────────────────────────────────────────────────────────────
+  function getLevel(score) {
+    return LEVELS.find(l => score >= l.min);
+  }
+
+  // ─── SHOW RESULTS ──────────────────────────────────────────────────────────
+  function showResults() {
+    const { domainScores, overall } = computeScores();
+    const level = getLevel(overall);
+
+    // Score + level
+    document.getElementById('resultScore').innerHTML = overall + '<span class="score-denom">/100</span>';
+    const badge = document.getElementById('resultBadge');
+    badge.textContent = level.label;
+    badge.className = 'level-badge level-' + level.key;
+    document.getElementById('resultTagline').textContent = level.tagline;
+
+    // Next level hint
+    const nextEl = document.getElementById('resultNext');
+    const nextLevel = LEVELS.find(l => l.min > overall && l.min <= 100);
+    if (nextLevel && overall < 96) {
+      const pts = nextLevel.min - overall;
+      nextEl.textContent = pts + ' point' + (pts === 1 ? '' : 's') + ' to ' + nextLevel.label;
+      nextEl.style.display = 'inline-block';
+    } else {
+      nextEl.style.display = 'none';
+    }
+
+    // Domain bars (animate after slight delay)
+    const domainKeys = ['cyber', 'disaster', 'insurance', 'physical'];
+    domainKeys.forEach(d => {
+      const score = domainScores[d];
+      document.getElementById('score-' + d).textContent = score;
+      setTimeout(() => {
+        const bar = document.getElementById('bar-' + d);
+        bar.style.width = score + '%';
+        bar.style.background = BAR_COLORS[d];
+      }, 100);
+    });
+
+    // Priority recommendations — show "no" answers sorted by domain weight desc
+    const noAnswers = QUESTIONS
+      .filter(q => answers[q.id] === 'no')
+      .sort((a, b) => DOMAIN_WEIGHTS[b.domain] - DOMAIN_WEIGHTS[a.domain])
+      .slice(0, 5);
+
+    const priorityList = document.getElementById('priorityList');
+    if (noAnswers.length === 0) {
+      priorityList.innerHTML = '<div class="all-clear">✓ No gaps found — you\'re fully covered across all domains.</div>';
+    } else {
+      priorityList.innerHTML = noAnswers.map((q, i) => {
+        const domainLabels = { cyber: '🔐 Cyber Security', disaster: '🏠 Disaster Prep', insurance: '📋 Insurance', physical: '🔒 Physical Security' };
+        return `
+          <div class="priority-card">
+            <div class="priority-num">${i + 1}</div>
+            <div class="priority-content">
+              <div class="priority-action">${q.action}</div>
+              <div class="priority-cost">${q.detail}</div>
+              <div class="priority-domain-tag">${domainLabels[q.domain]} · Est. ${q.cost}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // Swap views
+    document.getElementById('quiz-view').style.display = 'none';
+    document.getElementById('results-view').style.display = 'block';
+    document.getElementById('progress-bar-wrap').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ─── RETAKE ────────────────────────────────────────────────────────────────
+  function retake() {
+    // Clear all answers
+    for (const key in answers) delete answers[key];
+
+    // Reset all cards and buttons
+    for (let i = 1; i <= 16; i++) {
+      const card = document.getElementById('qcard-' + i);
+      card.className = 'question-card';
+      card.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+    }
+
+    // Reset domain bars
+    ['cyber','disaster','insurance','physical'].forEach(d => {
+      document.getElementById('bar-' + d).style.width = '0%';
+    });
+
+    // Reset progress
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressLabel').textContent = '0 of 16';
+    document.getElementById('submitBtn').disabled = true;
+
+    // Swap views
+    document.getElementById('results-view').style.display = 'none';
+    document.getElementById('quiz-view').style.display = 'block';
+    document.getElementById('progress-bar-wrap').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
